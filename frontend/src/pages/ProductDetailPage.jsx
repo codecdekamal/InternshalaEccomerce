@@ -15,15 +15,16 @@ const ProductDetailPage = () => {
   const allItems = useSelector((store) => store.product.items);
   const [product, setProduct] = useState({});
   function gettingClickedItem() {
-    const findingIdItem = allItems.find((item) => item.id == id);
+    const findingIdItem = allItems.find((item) => item._id == id);
     setProduct(findingIdItem);
   }
   const onClickHandler =()=>{
     dispatch(addToCart({product:product}))
   }
-  useEffect(() => {
-    gettingClickedItem();
-  }, []);
+  useEffect(()=>{
+    gettingClickedItem()
+  },[product])
+ 
   // Dummy product data (replace with actual data or fetch from an API)
   return (
     <>

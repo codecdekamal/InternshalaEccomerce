@@ -34,8 +34,9 @@ const UserSchema = mongoose.Schema({
     timestamps:true
 })
 UserSchema.pre('save',async function (next){
+    console.log(this)
     const salt = await bcrypt.genSalt(10);
-    this.password =  bcrypt.hash(this.password,salt)
+    this.password = await bcrypt.hash(this.password,salt)
     next()
 })
 module.exports = mongoose.model("User",UserSchema)

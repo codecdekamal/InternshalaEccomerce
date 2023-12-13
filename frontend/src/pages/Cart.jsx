@@ -6,22 +6,39 @@ import Navbar from "../component/Navbar/Navbar";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { totalAmount,checkOut,eliminatingCart, Increase,Decrease } from "../feature/CartContext";
+import { useNavigate } from "react-router-dom";
 const Cart = () => {
+  const navigate = useNavigate()
   const cartProducts = useSelector(store=>store.cart.items)
   const cartTotal = useSelector(store=>store.cart.cartTotal)
-  const dispatch = useDispatch();
+  const checkItOut = useSelector(store=>store.cart.check)
+console.log(cartProducts)
+ const dispatch = useDispatch();
   console.log(cartProducts)
   const checkOutHandler = () =>{
     dispatch(checkOut())
+    if(checkItOut){
+      return navigate("/shipping_address")
+    }
   }
   const onDeleteHandler = (e) =>{
     console.log(e.target.id)
     dispatch(eliminatingCart(e.target.id))
   }
- 
+ const decreaseHandler = (id) =>{
+  dispatch(Decrease(id))
+  dispatch(totalAmount())
+
+ }
+ const IncreaseHandler = (id) =>{
+  dispatch(Increase(id))
+  dispatch(totalAmount())
+
+ }
   useEffect(()=>{
     dispatch(totalAmount())
   },[cartProducts])
+  
   return (
     <>
       <Navbar />
@@ -41,7 +58,7 @@ const Cart = () => {
           </div>
           {cartProducts.map((item) => {
             return (
-              <div key={item.id} className="cart-body fs-5 mb-3 ">
+              <div key={item._id} className="cart-body fs-5 mb-3 ">
                 <div className="cart-img">
                   <img
                     width="150px"
@@ -53,23 +70,23 @@ const Cart = () => {
                   <div className="price-title fs-md-5">{item.title}</div>
                   <div className="price-num">${item.total}</div>
                   <div className="delete">
-                    <button className="btn btn-warning"  id={item.id} onClick={onDeleteHandler}>
-                      <span className="material-symbols-outlined" id={item.id}>
+                    <button className="btn btn-warning"  id={item._id} onClick={onDeleteHandler}>
+                      <span className="material-symbols-outlined" id={item._id}>
                         {" "}
                         delete{" "}
                       </span>
                     </button>
                   </div>
                 </div>
-                <div className="cart-input" id={item.id}>
-                  <button id={item.id} className="btn btn-warning" onClick={()=>dispatch(Decrease(item.id))} >-</button>
+                <div className="cart-input" id={item._id}>
+                  <button id={item._id} className="btn btn-warning" onClick={()=>decreaseHandler(item._id)} >-</button>
                   <input
                     type="number"
                     className="w-100 rounded-2 border-black align-items-center "
                     readOnly
                     value={item.quantity}
                   />
-                  <button id={item.id} className="btn btn-warning" onClick={()=>dispatch(Increase(item.id))} >+</button>
+                  <button id={item._id} className="btn btn-warning" onClick={()=>IncreaseHandler(item._id)} >+</button>
                 </div>
               </div>
             );

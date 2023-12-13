@@ -1,7 +1,12 @@
 import React from "react";
 import "../../index.css";
+import { showModal } from "../../feature/ModalContext";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import ProductModal from "../Modal/ProductModal";
 const Navbar = () => {
+  const dispatch = useDispatch()
+  const { isAuthenticated, userID,role } = useSelector((store) => store.auth);
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-dark  ">
       <div className="container-fluid">
@@ -41,12 +46,13 @@ const Navbar = () => {
                 </form>
               </div>
               <div className="loginAndCart">
+                {role==="admin" &&  <ProductModal showModal = {showModal()} />}
                 <button className=" btn btn-warning " type="button">
                   <Link
-                  to="/login"
+                  to={isAuthenticated ? "/logout":"/login"}
                     className="text-light  text-decoration-none"
                   >
-                    Login
+                    {isAuthenticated ? "Logout":"Login"}
                   </Link>
                 </button>
                 <Link

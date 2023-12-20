@@ -1,7 +1,7 @@
 import React from 'react'
-import Navbar from '../../Navbar/Navbar'
-import NavSec from '../../Navbar/NavSec'
-import NavFooter from '../../Navbar/NavFooter'
+import Navbar from '../Navbar/Navbar'
+import NavSec from '../Navbar/NavSec'
+import NavFooter from '../Navbar/NavFooter'
 const Mens = () => {
   return (
     <div>

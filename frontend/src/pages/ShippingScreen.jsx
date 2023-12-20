@@ -27,13 +27,16 @@ const ShippingScreen = () => {
   };
   const submitHandler = async(e) => {
     e.preventDefault();
+    const addingAddressToCartItems = items.map((item)=>{
+      return {...item,address}
+    })
+    console.log(addingAddressToCartItems)
     dispatch(shippingAddress(address));
     const { name, street, city, zipCode, country } = address;
     if (!name || !street || !city || !zipCode || !country) {
       return setWarning(true);
     }
    const stripe = await loadStripe("pk_test_51OMs5QSJSsiwzm7z2tctqqSKGyi3LvFqpNGJvvKIaD8FtlEgm2N8gXQD1N6WOLFFTF8p8ysP0vMdBLnliIBeqANN00Tgm6AtyC");
-  
    const headers = {
     'Authorization': `Bearer ${token}`,
     'Content-Type': 'application/json'
@@ -41,7 +44,7 @@ const ShippingScreen = () => {
 const response = await fetch("http://localhost:5000/api/v1/order/", {
       method: "POST",
       headers: headers,
-      body: JSON.stringify(items),
+      body: JSON.stringify(addingAddressToCartItems),
     })
     const session = await response.json();
     const result = stripe.redirectToCheckout({

@@ -3,7 +3,8 @@ const initialState = {
     token:localStorage.getItem("token") || "",
     isAuthenticated:localStorage.getItem("token")?true:false || false,
     userID:localStorage.getItem("userID") || null,
-    role:localStorage.getItem("role")
+    role:localStorage.getItem("role"),
+    username:localStorage.getItem("username") || null,
 }
 const AuthSlice = createSlice({
    name:"auth",
@@ -11,6 +12,12 @@ const AuthSlice = createSlice({
    reducers:{
     login:(state,action)=>{
         state.isAuthenticated = true;
+        const {token,username,userID,role} = action.payload
+        state.token = token
+        state.isAuthenticated = token && true
+        state.userID = userID
+        state.role = role
+        state.username = username
         state.user = action.payload
     },
     logOut:(state) => {

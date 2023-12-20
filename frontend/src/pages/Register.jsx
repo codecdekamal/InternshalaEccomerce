@@ -5,20 +5,19 @@ import { login } from "../feature/AuthContext";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-const Login = () => {
+import Alert from "../component/Navbar/Alert";
+const Register = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, userID } = useSelector((store) => store.auth);
-  console.log(userID);
-
-  console.log(isAuthenticated);
   const dispatch = useDispatch();
   const [userInput, setUserInput] = useState({
     email: "",
     password: "",
+    username:"",
+     name:""
   });
-  const [warning, setWarning] = useState(false);
+  const [warning, setWarning] = useState("");
   const onChangeHandler = (e) => {
-    setWarning(false);
+    setWarning("");
     const { name, value } = e.target;
     console.log({ [name]: value });
     setUserInput({ ...userInput, [name]: value });
@@ -29,43 +28,41 @@ const Login = () => {
     console.log(userInput);
     const { email, password } = userInput;
     if (!email || !password) {
-      return setWarning(true);
+      return setWarning("Please Provide email and password");
     }
     const fetchingData = async () => {
       try {
         const resp = await axios.post(
-          "http://localhost:5000/api/v1/auth/login",
+          "http://localhost:5000/api/v1/auth/register",
           userInput
         );
-        dispatch(login(resp.data));
         console.log(resp.data);
-        const { token, userID, role ,username} = resp.data;
-        localStorage.setItem("token", token);
-        localStorage.setItem("userID", userID);
-        localStorage.setItem("role", role);
-        localStorage.setItem("username", username);
-        toast("Wow so easy!", { type: "success" });
+        if(resp.status ===201){
+          toast("Wow so easy!", { type: "success" });
+          return  setTimeout(()=>{
+            navigate("/login")
+          },2000) 
+        }
+        else{
+          setWarning(resp.data.msg)
+        }
       } catch (error) {
-        toast("Error occurred!", { type: "error" })
+        toast("User already registerd!", { type: "error" }); // Notify if error occurs
         if (error) {
-          return setWarning(true);
-
+          console.log(error)
+          return setWarning(error.response.data.msg);
         }
         console.log(error);
       }
     };
     fetchingData();
   };
-  useEffect(() => {
-    if (isAuthenticated) {
-      setTimeout(() => {
-        return navigate("/");
-      }, 2000);
-    }
-  }, [isAuthenticated]);
+
   return (
     <>
-      <section
+     <ToastContainer />
+{    warning &&  <Alert message={warning}/>
+}      <section
         id="loginHeader"
         className="container-fluid d-flex flex-column card w-75  rounded-2 my-5 p-md-4"
         style={{ maxWidth: "min-content" }}
@@ -73,7 +70,7 @@ const Login = () => {
         <header className="d-flex justify-content-center flex-column ">
           <div className="head d-flex justify-content-center p-2">
             <h3 className="py-2 " style={{ color: "#1877F2" }}>
-              Login
+            Register
             </h3>
           </div>
           <div className="justify-content-center d-flex m-2">
@@ -92,6 +89,15 @@ const Login = () => {
           action=""
           className="d-flex flex-column justify-content-center align-items-center card-body "
         >
+             <div className="password mb-3 loginButton">
+            <p className="m-0 ">Name</p>
+            <input
+              name="name"
+              className="input"
+              type="text"
+              onChange={onChangeHandler}
+            />
+          </div>
           <div className="email mb-3 loginButton">
             <p className="m-0 ">E-mail</p>
             <input
@@ -101,6 +107,16 @@ const Login = () => {
               onChange={onChangeHandler}
             />
           </div>
+          <div className="password mb-3 loginButton">
+            <p className="m-0 ">Username</p>
+            <input
+              name="username"
+              className="input"
+              type="text"
+              onChange={onChangeHandler}
+            />
+          </div>
+         
           <div className="password mb-3 loginButton">
             <p className="m-0 ">Password</p>
             <input
@@ -112,23 +128,23 @@ const Login = () => {
           </div>
           <div className="loginButton mt-1 ">
             <button type="submit" className="btn btn-warning px-3  fs-6 px-5 ">
-              Login
+            Register
             </button>
           </div>
         </form>
-     
-     <div className="container-fluid  ">
-            <p className="row-12 fw-normal  my-0" >
-            new here? : <NavLink to="/register" >Register</NavLink>
-            </p>
-            <p className="row-12 fw-normal " >
-              forget password : <NavLink to="/register" >Reset password</NavLink>
-            </p>
-          </div>
-        <ToastContainer />
+        <div class="container">
+  <div class="row ">
+    <div class="px-3 col-8 ">
+    <p className="text-info">Already a user?</p>
+    </div>
+    <div class="col">
+    <NavLink  className="" to="/login" > Login</NavLink>
+    </div>
+  </div>
+</div>
       </section>
     </>
   );
 };
 
-export default Login;
+export default Register;

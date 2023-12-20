@@ -1,9 +1,16 @@
+let shippingAddress =(address)=>{
+  let newAddress = ""
+  for (const key of Object.keys(address)) {
+    newAddress += `${address[key]} `; 
+  }
+   return newAddress.trim();
+}
 const OrderDetails = ({ order }) => (
     <div className="container-fluid " style={{minWidth:"100vw",minHeight:"100vh",backgroundColor:"#F0F2F5"}}>
      <div className="container pt-3 ">
       <div className="row">
         <div className="col-md-8">
-          <h1 className="fw-bold mb-4 text-info  ">Order:{order.id}</h1>
+          <h1 className="fw-bold mb-4 text-info  ">Order:{order._id.slice(5,10)}</h1>
           <div className="card mb-4">
             <div className="card-header text-info ">
               Order Information
@@ -12,9 +19,7 @@ const OrderDetails = ({ order }) => (
               <li className="list-group-item">
                 <strong>Customer Name:</strong> {order.customerName}
               </li>
-              <li className="list-group-item">
-                <strong>Order Date:</strong> {order.orderDate}
-              </li>
+           
               <li className="list-group-item">
                 <strong>Order Status:</strong> {order.orderStatus}
               </li>
@@ -22,7 +27,7 @@ const OrderDetails = ({ order }) => (
                 <strong>Payment Method:</strong> {order.paymentMethod}
               </li>
               <li className="list-group-item">
-                <strong>Shipping Address:</strong> {order.shippingAddress}
+                <strong>Shipping Address:</strong> {shippingAddress(order.shippingAddress)}
               </li>
             </ul>
           </div>
@@ -61,7 +66,7 @@ const OrderDetails = ({ order }) => (
               </tbody>
             </table>
             <div className="card-footer text-right">
-              <strong>Total: ${order.totalAmount}</strong>
+              <strong>Total: ${order.totalAmount/100}</strong>
             </div>
           </div>
         </div>
@@ -75,19 +80,12 @@ const OrderDetails = ({ order }) => (
                 Items: {order.items.length}
               </li>
               <li className="list-group-item">
-                Subtotal: ${order.subtotal}
+                Subtotal: ${order.subtotal/100}
               </li>
-              <li className="list-group-item">
-                Shipping: ${order.shippingCost}
-              </li>
-              <li className="list-group-item">
-                Tax: ${order.tax}
-              </li>
+           
             </ul>
           </div>
-          <button className="btn btn-primary btn-lg btn-block  ">
-            Place Order
-          </button>
+          
         </div>
       </div>
     </div>

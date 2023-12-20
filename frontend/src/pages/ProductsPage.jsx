@@ -1,145 +1,100 @@
-import React, { useEffect, useState } from 'react'
-import NavSec from '../component/Navbar/NavSec'
-import Navbar from '../component/Navbar/Navbar'
-import Card from '../utilities/Card'
-import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { useDispatch, useSelector } from 'react-redux'
-import { getAllProducts } from '../feature/ProductContext'
+import React, { useEffect, useState } from "react";
+import NavSec from "../component/Navbar/NavSec";
+import Navbar from "../component/Navbar/Navbar";
+import Card from "../utilities/Card";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProducts } from "../feature/ProductContext";
+import CardContainer from "../component/CardContainer";
+import { ToastContainer, toast } from "react-toastify";
+import Loadeer from "../component/Loadeer";
 const ProductPage = () => {
-const token =   useSelector((store)=>store.auth.token)
-const dispatch = useDispatch()
-  const [ProductData,setProductData] = useState([])
-  const navigate = useNavigate()
-  const onSubmitHandler=(e)=>{
-    e.preventDefault()
-    console.log(e.target.id)
-}
-const onClickHandler = (e) =>{
-  console.log(e.target.id)
-  if(e.target.id){
-     navigate(`/productdetailpage/${e.target.id}`)
-  }
-}
-const fetchData = async () =>{
-  const response = await axios.get("http://localhost:5000/api/v1/products/",{
-    headers:{
-      Authorization:`Bearer ${token}`
+  const [loading, setLoading] = useState(false);
+  let { category } = useParams();
+  console.log(category);
+  const token = useSelector((store) => store.auth.token);
+  const dispatch = useDispatch();
+  const [ProductData, setProductData] = useState([]);
+  const navigate = useNavigate();
+
+  const onClickHandler = (id) => {
+    console.log(id);
+    if (id) {
+      navigate(`/productdetailpage/${id}`);
     }
-  })
-  console.log(response.data)
-  setProductData(response.data.products)
-  dispatch(getAllProducts(response.data.products) )
-}
-useEffect(()=>{
-  fetchData()
-},[])
+  };
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      const response = await axios.get(
+        `http://localhost:5000/api/v1/products/productpage/${category}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast("Wow so easy!", { type: "success" }); // Notify after successful data fetch
+      console.log(response.data);
+      setProductData(response.data.products);
+      dispatch(getAllProducts(response.data.products));
+      setLoading(false)
+    } catch (error) {
+      console.error(error);
+      setLoading(false)
+      toast("Error fetching products!", { type: "error" }); // Notify if error occurs
+    }
+  };
+  const settingSrc = (imagePath) => {
+    const domain = "http://localhost:5000";
+    if (imagePath.startsWith("/uploads")) {
+      return `${domain}${imagePath}`;
+    }
+    return imagePath;
+  };
+  useEffect(() => {
+    fetchData();
+  }, [category]);
   return (
     <div>
-        <Navbar/>
-        <NavSec/>
-        <div className="allProducts container-fluid p-3">
-           <div className=" fs-2 fw-bolder  text-capitalize d-flex justify-content-center ">all products</div>
-           <div className="container-fluid ">  
-            {/* <!-----------mens-->        */}
-            <div className="row justify-content-center row">
-            {
-                ProductData.map((item,i)=>{
-                    return <Card  onClick={onClickHandler} onSubmitHandler={onSubmitHandler} key={item.i} id={item._id}>
-                    <img
-                     id={item._id}
-                     src={item.images}
-                      className=" "
-                      height="200"
-                      width="fit-content"
-                    />
-                    <div
-                    id={item._id}
-                      className="makingHeadingCenterAlign card-body bg-secondary rounded-bottom-3"
-                    >
-                      <h5 className="text-bg-dark rounded" id={item._id}>T-Shirt
-                    </h5>
-                      <span className="text-bold" id={item._id}>${item.price}</span>
-                      <p className="makingThingsFlex text-light ">This comfortable and stylish t-shirt </p>
-                      <ul className='px-2 text-white d-flex justify-content-center  ' >
-                      {
+      <Navbar />
+      <NavSec />
+      {loading && <Loadeer />}
+      <CardContainer heading={category}>
+        {ProductData.map((item, i) => {
+          return (
+            <Card onClick={onClickHandler} id={item._id}>
+              <img
+                src={settingSrc(item.images)}
+                className=" "
+                height="200"
+                width="fit-content"
+              />
+              <div className="makingHeadingCenterAlign card-body bg-secondary rounded-bottom-3">
+                <h5 className="text-bg-dark rounded">{item.name}</h5>
+                <span className="text-bold">$56</span>
+                <p className="makingThingsFlex text-light ">
+                  {item.description}{" "}
+                </p>
+                <ul className="px-2 text-white d-flex justify-content-center  ">
+                  {/* {
                         Array.from(Array(Math.floor(item.rating)),(e,i)=>{
-                          return <li key={i} id={item._id} className='list-unstyled mx-1 fs-2 ' >*</li>
+                          return <li key={item._id}  className='list-unstyled mx-1 fs-2 ' >*</li>
                         })
-                      }
-                      </ul>
-                      <button
-                       id={item.id}
-                        className="btn btn-warning d-flex justify-content-center align-align-items-center text-dark"
-                      >
-                        <span className="material-symbols-rounded" id={item.id} >shopping_cart</span>
-                        Add to cart
-                      </button>
-                    </div>
-                  </Card>
-                })
-            }
-                </div>
-                {/* <!------------womens--> */}
-                {/* <div className="row justify-content-center ">
-                {
-                ProductData.map((item,i)=>{
-                    return <Card >
-                    <img
-                      className=" "
-                      height="200"
-                      width="fit-content"
-                    />
-                    <div
-                      className="makingHeadingCenterAlign card-body bg-secondary rounded-bottom-3"
-                    >
-                      <h5 className="text-bg-dark rounded">T-Shirt
-                    </h5>
-                      <span className="text-bold">$8</span>
-                      <p className="makingThingsFlex text-light ">This comfortable and stylish t-shirt </p>
-                      <button
-                        className="btn btn-warning d-flex justify-content-center align-align-items-center text-dark"
-                      >
-                        <span className="material-symbols-rounded">shopping_cart</span>
-                        Add to cart
-                      </button>
-                    </div>
-                  </Card>
-                })
-            }
-                </div> */}
-                {/* <!-----------kids--> */}
-                {/* <div className="row justify-content-center ">
-                {
-                ProductData.map((item,i)=>{
-                    return <Card >
-                    <img
-                      className=" "
-                      height="200"
-                      width="fit-content"
-                    />
-                    <div
-                      className="makingHeadingCenterAlign card-body bg-secondary rounded-bottom-3"
-                    >
-                      <h5 className="text-bg-dark rounded">T-Shirt
-                    </h5>
-                      <span className="text-bold">$8</span>
-                      <p className="makingThingsFlex text-light ">This comfortable and stylish t-shirt </p>
-                      <button
-                        className="btn btn-warning d-flex justify-content-center align-align-items-center text-dark"
-                      >
-                        <span className="material-symbols-rounded">shopping_cart</span>
-                        Add to cart
-                      </button>
-                    </div>
-                  </Card>
-                })
-            }
-                </div> */}
-         </div>      
-           </div>
-        </div>
-  )
-}
+                      } */}
+                </ul>
+                <button className="btn btn-warning d-flex justify-content-center align-align-items-center text-dark">
+                  <span class="bi bi-cart me-2"></span>
+                  ADD TO CART
+                </button>
+              </div>
+            </Card>
+          );
+        })}
+      </CardContainer>
+    </div>
+  );
+};
 
-export default ProductPage
+export default ProductPage;

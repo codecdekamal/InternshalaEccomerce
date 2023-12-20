@@ -8,10 +8,12 @@ import ProductsPage from "./pages/ProductsPage"
 import ProductDetailPage from "./pages/ProductDetailPage"
 import Cart from "./pages/Cart";
 import ShippingScreen  from "./pages/ShippingScreen";
-import PaymentScreen from "./pages/PaymentScreen";
 import PlaceOrderScreen from "./pages/PlaceOrderScreen";
 import Logout from "./pages/Logout";
 import Checkout from "./pages/Checkout";
+import Editproduct from "./pages/Editproduct"
+import UserProfilePage from "./pages/UserProfilePage";
+import Register from "./pages/Register";
  function App() {
   const router = createBrowserRouter([
     {
@@ -27,8 +29,12 @@ import Checkout from "./pages/Checkout";
       element:<Logout/>
     },
     {
-      path:"/allproducts",
-      element:<ProductsPage></ProductsPage>
+      path:"/register",
+      element:<Register/>
+    },
+    {
+      path:"/productPage/:category",
+      element:<ProductsPage></ProductsPage>,
     },
     {
       path:"/productdetailpage/:id",
@@ -41,9 +47,6 @@ import Checkout from "./pages/Checkout";
     {path:"/shipping_address",
     element:<ShippingScreen/>
   },
-  {path:"/payment_screen",
-  element:<PaymentScreen/>
-},
 {path:"/order_screen",
 element:<PlaceOrderScreen/>
 },
@@ -51,6 +54,15 @@ element:<PlaceOrderScreen/>
   path:"/checkout",
   element:<Checkout />
 },
+{
+  path:"/editProduct",
+  element:<Editproduct />
+},
+{
+  path:"/my_Profile",
+  element:<UserProfilePage/>
+}
+
 // {
 //   path:"/return",
 //   element:<Return />

@@ -12,7 +12,7 @@ const inputFields = [
   { type: "number", placeholder: "rating", name: "" },
   { type: "number", placeholder: "stock", name: "" },
 ];
-function ProductModal() {
+function Addproduct({productId}) {
   const [warning, setWarning] = useState(false)
   const token =   useSelector((store)=>store.auth.token)
   const notify = () => toast("Wow so easy!");
@@ -20,20 +20,20 @@ function ProductModal() {
     title: "",
     description: "",
     price: 0,
-    images: "",
+    img: null,
     rating: 0,
     stock: 0,
     category: "",
   });
   const fetchingData = async() =>{
     try {
-      const response = await axios.post("http://localhost:5000/api/v1/products/",ProductDetails,{
-    headers:{
-      Authorization:`Bearer ${token}`
-    }
+        const formData = new FormData();
+      const response = await axios.patch(`http://localhost:5000/api/v1/products/${productId}`,ProductDetails,{
+        headers: {
+            Authorization: `Bearer ${token}`,
+          },
   })
   console.log(response)
-    notify();
   console.log(ProductDetails);
     setShow(false);
     } catch (error) {
@@ -43,17 +43,28 @@ function ProductModal() {
     
   }
   const onSubmitHandler = async() => {
-    // const  {title ,description , price , images , rating , stock , category} = ProductDetails
-    // if (title || description || price || images || rating || stock || category === "") {
-    //   return setShow(true)
-    // }
+    console.log(ProductDetails)
+  notify();
   await fetchingData()
-    
+    setProductDetails({
+        title: "",
+        description: "",
+        price: 0,
+        img: "",
+        rating: 0,
+        stock: 0,
+        category: "",
+    })
   };
   const onChangeHandler = (e) => {
+    console.log(productId)
     const { name, value } = e.target;
     console.log({ [name]: value });
+    if (e.target.files){
+        setProductDetails({ ...ProductDetails, images:e.target.files[0] });
+    }
     setProductDetails({ ...ProductDetails, [name]: value });
+    console.log(ProductDetails)
   };
   const [show, setShow] = useState(false);
 
@@ -64,20 +75,21 @@ function ProductModal() {
   const handleOption = (e) => {
     console.log(e.target.value);
     setProductDetails({ ...ProductDetails, category: e.target.value });
+
   };
   const onFileHandler = (e) => {
     console.log(e.target.files[0]);
-    // setProductDetails({ ...ProductDetails, images: e.target.files[0] });
+   setProductDetails({ ...ProductDetails, img: e.target.files[0] });
   };
   return (
     <>
       <ToastContainer />
       <Button
-        variant="warning"
+        variant=""
         onClick={handleShow}
-        className="px-1 my-2 text-light f mx-lg-3 border-0"
+        className=" border-0 mx-1"
       >
-        Add products
+        Edit Product
       </Button>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
@@ -120,21 +132,14 @@ function ProductModal() {
             <option value="womens">Women</option>
             <option value="kids">Kids</option>
           </select>
-          <div className="mb-3">
-            <input
-              onChange={onFileHandler}
-              className="form-control"
-              type="file"
-              id="formFile"
-            />
-          </div>
+        
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
           <Button type="submit" variant="primary" onClick={onSubmitHandler}>
-            Add Product
+            Edit Product
           </Button>
         </Modal.Footer>
       </Modal>
@@ -142,4 +147,4 @@ function ProductModal() {
   );
 }
 
-export default ProductModal;
+export default Addproduct;
